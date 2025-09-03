@@ -17,7 +17,7 @@ for column in df:
 
 df['cholesterol'] = np.where(df['cholesterol'] == 1, 0, 1)
 df['gluc'] = np.where(df['gluc'] == 1, 0, 1)
-print(df)
+
 # 4
 def draw_cat_plot():
     # 5
@@ -25,7 +25,7 @@ def draw_cat_plot():
 
 
     # 6
-    df_cat = df_cat.groupby()['cardio']
+    df_cat = df_cat.groupby(['cardio','variable','value'], as_index = False).size().rename(columns = {'size':'total'})
     
 
     # 7
@@ -33,8 +33,7 @@ def draw_cat_plot():
 
 
     # 8
-    fig = None
-
+    fig = sns.catplot(x = 'variable', hue = 'value', col = 'cardio', y = 'total', kind = 'bar', data = df_cat).set_axis_labels("variable", "total")
 
     # 9
     fig.savefig('catplot.png')
