@@ -7,12 +7,10 @@ import numpy as np
 df = pd.read_csv("medical_examination.csv")
 
 # 2
-df['overweight'] = ((df['weight']/((df['height']/100))**2)).apply(lambda x: 1 if x > 25 else 0)
+df['overweight'] = (df['weight'] / ((df['height'] / 100) ** 2)).apply(lambda x: 1 if x > 25 else 0)
 
 
 # 3
-for column in df:
-    df[column] = ((df[column] - df[column].min()) / (df[column].max() - df[column].min())).round(0)
 
 
 df['cholesterol'] = np.where(df['cholesterol'] == 1, 0, 1)
@@ -33,7 +31,7 @@ def draw_cat_plot():
 
 
     # 8
-    fig = sns.catplot(x = 'variable', hue = 'value', col = 'cardio', y = 'total', kind = 'bar', data = df_cat).set_axis_labels("variable", "total")
+    fig = sns.catplot(x = 'variable', hue = 'value', col = 'cardio', y = 'total', kind = 'bar', data = df_cat).set_axis_labels("variable", "total").fig
 
     # 9
     fig.savefig('catplot.png')
@@ -43,20 +41,30 @@ def draw_cat_plot():
 # 10
 def draw_heat_map():
     # 11
-    df_heat = None
+    df_heat = df[(df['ap_lo'] <= df['ap_hi']) & 
+    (df['height'] >= df['height'].quantile(0.025)) & 
+    (df['height'] <= df['height'].quantile(0.975)) & 
+    (df['weight'] >= df['weight'].quantile(0.025)) & 
+    (df['weight'] <= df['weight'].quantile(0.975))]
 
     # 12
-    corr = None
+    corr = df_heat.corr()
 
     # 13
-    mask = None
+    mask = np.triu(np.ones_like(corr, dtype=bool))
 
 
 
     # 14
-    fig, ax = None
+    fig, ax = plt.subplots(figsize=(10, 8))
 
     # 15
+    
+    sns.heatmap(
+    corr, mask=mask, cmap='coolwarm', vmax=.3, center=0,
+    square=True, linewidths=.5, cbar_kws={"shrink": .5},
+    annot=True, fmt=".1f", ax=ax
+    )
 
 
 
